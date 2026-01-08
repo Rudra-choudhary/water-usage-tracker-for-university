@@ -7,7 +7,7 @@
         "dev": "tsx watch src/index.ts",
         "build": "tsc",
         "start": "node dist/index.js",
-        "db:init": "node -e \"require('./src/db/database.js').initDatabase()\""
+        "db:init": "node -e \"require('./dist/db/database.js').initDatabase()\""
     },
     "keywords": [
         "water",
