@@ -7,8 +7,11 @@ const dbDir = path.dirname(dbPath);
 
 // Ensure data directory exists
 if (!fs.existsSync(dbDir)) {
+    console.log(`📁 Creating database directory: ${dbDir}`);
     fs.mkdirSync(dbDir, { recursive: true });
 }
+
+console.log(`💾 Using database at: ${dbPath}`);
 
 // Initialize database connection
 export const db = new Database(dbPath);

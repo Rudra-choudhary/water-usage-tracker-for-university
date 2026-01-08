@@ -9,11 +9,26 @@ import usageRouter from './routes/usage';
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3001;
+const port = parseInt(process.env.PORT || '3001', 10);
 
 // Middleware
+const allowedOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+    : ['http://localhost:3000'];
+
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        // Check if origin is allowed
+        if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
 }));
 app.use(express.json());
 
@@ -78,11 +93,13 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
 });
 
 // Start server
-app.listen(port, () => {
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+app.listen(port, HOST, () => {
     console.log(`\n🚀 Campus Water Monitor API`);
-    console.log(`📡 Server running on http://localhost:${port}`);
+    console.log(`📡 Server running on http://${HOST}:${port}`);
     console.log(`🌐 CORS enabled for: ${process.env.CORS_ORIGIN || 'http://localhost:3000'}`);
     console.log(`💾 Database: ${process.env.DATABASE_PATH || './data/water_monitor.db'}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`\n✅ Ready to receive sensor data!\n`);
 });
 
