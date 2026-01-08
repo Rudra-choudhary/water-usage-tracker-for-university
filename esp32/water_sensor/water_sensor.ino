@@ -7,8 +7,8 @@
  * Hardware:
  * - ESP32 Dev Board
  * - HC-SR04 Ultrasonic Sensor
- *   - TRIG -> GPIO 5
- *   - ECHO -> GPIO 18
+ *   - TRIG -> D25
+ *   - ECHO -> D26
  *   - VCC -> 5V
  *   - GND -> GND
  * 
