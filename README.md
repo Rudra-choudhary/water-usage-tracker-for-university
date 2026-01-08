@@ -1,294 +1,325 @@
-# Campus Water Monitor
+# Campus Water Monitor 💧
 
-A production-ready Next.js 14 dashboard for tracking water usage across university campus buildings in real-time.
+A production-ready IoT water monitoring system for university campuses using ESP32 sensors and a real-time dashboard.
 
-![Dashboard Preview](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?style=flat-square&logo=tailwind-css)
+![Node.js](https://img.shields.io/badge/Node.js-Backend-green?style=flat-square&logo=node.js)
+![ESP32](https://img.shields.io/badge/ESP32-IoT-red?style=flat-square&logo=espressif)
 
-## 📋 Project Purpose
+## 📋 Overview
 
-Campus Water Monitor is a comprehensive dashboard designed to help university facilities management track, analyze, and optimize water usage across different campus buildings. The system provides:
+Real-time water usage monitoring system that tracks consumption across multiple campus buildings using ultrasonic sensors (HC-SR04) connected to ESP32 microcontrollers. Features include:
 
-- **Real-time monitoring** of water consumption across 5 campus buildings
-- **Visual analytics** with interactive charts and graphs
-- **Leak detection** and anomaly alerts
-- **Sensor status monitoring** for maintenance teams
-- **Historical data analysis** with flexible date range selection
+- 📊 **Real-time Dashboard** - Live water level monitoring and usage analytics
+- 🚨 **Leak Detection** - Automatic anomaly detection and alerts
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
+- 🔌 **IoT Integration** - ESP32 sensors with WiFi connectivity
+- 💾 **Data Storage** - SQLite database with historical tracking
+- 📈 **Analytics** - Usage trends, peak hours, and building comparisons
+
+## 🏗️ Architecture
+
+```
+ESP32 Sensors → WiFi → Backend API → SQLite Database → Next.js Dashboard
+```
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- Node.js 18+ and npm
+- Arduino IDE (for ESP32)
+- ESP32 development board
+- HC-SR04 ultrasonic sensor
+
 ### Installation
 
-```bash
-# Install dependencies
-npm install
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/water-usage-tracker.git
+   cd water-usage-tracker
+   ```
+
+2. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install backend dependencies**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+4. **Configure environment**
+   ```bash
+   # Frontend
+   cp .env.example .env.local
+   
+   # Backend
+   cd backend
+   cp .env.example .env
+   # Edit .env with your tank dimensions
+   ```
+
+5. **Start the backend**
+   ```bash
+   cd backend
+   npm run dev
+   ```
+   Backend runs on http://localhost:3001
+
+6. **Start the frontend**
+   ```bash
+   npm run dev
+   ```
+   Dashboard opens at http://localhost:3000
+
+## 🔧 ESP32 Setup
+
+### Hardware Wiring
+
+```
+HC-SR04          ESP32
+─────────────────────────
+VCC      ───────  5V
+TRIG     ───────  GPIO 25
+ECHO     ───────  GPIO 26
+GND      ───────  GND
 ```
 
-### Run Development Server
+### Firmware Configuration
 
-```bash
-npm run dev
+1. Open `esp32/water_sensor/water_sensor.ino` in Arduino IDE
+2. Update WiFi credentials:
+   ```cpp
+   const char* ssid = "Your_WiFi_SSID";
+   const char* password = "Your_WiFi_Password";
+   ```
+3. Update server URL with your computer's IP:
+   ```cpp
+   const char* serverUrl = "http://192.168.1.XXX:3001/api/water";
+   ```
+4. Configure tank dimensions:
+   ```cpp
+   const float TANK_HEIGHT_CM = 200.0;
+   const float TANK_CAPACITY_L = 500.0;
+   ```
+5. Upload to ESP32
+
+See [ESP32_SETUP.md](ESP32_SETUP.md) for detailed instructions.
+
+## 📊 Features
+
+### Dashboard
+
+- **Summary Cards** - Total usage, most consuming building, leak risk, sensor status
+- **Usage Trend Chart** - Hourly/daily water consumption with building filter
+- **Building Comparison** - Bar chart comparing all buildings
+- **Alerts Table** - Real-time leak and anomaly notifications
+- **Building Details** - Individual building statistics with sparkline
+- **Water Level Gauges** - Visual tank fill indicators
+
+### Backend API
+
+- `POST /api/water` - Receive ESP32 sensor data
+- `GET /api/sensors/status` - Get all sensor statuses
+- `GET /api/usage?days=7` - Historical usage data
+- `GET /api/usage/hourly` - Today's hourly breakdown
+- `GET /api/alerts` - Active alerts
+
+### ESP32 Features
+
+- WiFi connectivity
+- Ultrasonic distance measurement
+- Automatic water level calculation
+- 30-second reading interval
+- Auto-reconnect on WiFi drop
+- Serial debugging output
+
+## 📁 Project Structure
+
+```
+water-usage-tracker/
+├── backend/                    # Node.js/Express API
+│   ├── src/
+│   │   ├── routes/            # API endpoints
+│   │   ├── services/          # Business logic
+│   │   ├── db/                # Database & schema
+│   │   └── utils/             # Helper functions
+│   └── data/                  # SQLite database
+├── esp32/                     # ESP32 firmware
+│   └── water_sensor/
+│       └── water_sensor.ino   # Arduino code
+├── src/                       # Next.js frontend
+│   ├── app/                   # Pages & layouts
+│   ├── components/            # React components
+│   ├── lib/                   # Utilities & API
+│   └── types/                 # TypeScript types
+└── docs/                      # Documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the dashboard.
+## 🛠️ Tech Stack
+
+**Frontend:**
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- Recharts
+- SWR (data fetching)
+
+**Backend:**
+- Node.js
+- Express.js
+- SQLite (better-sqlite3)
+- TypeScript
+
+**Hardware:**
+- ESP32 (WiFi microcontroller)
+- HC-SR04 (Ultrasonic sensor)
+
+## 📖 Documentation
+
+- [Integration Guide](INTEGRATION_GUIDE.md) - Complete setup guide
+- [ESP32 Setup](ESP32_SETUP.md) - Hardware configuration
+- [API Documentation](backend/README.md) - Backend API reference
+
+## 🧪 Testing
+
+### Test Backend API
+
+```bash
+# Health check
+curl http://localhost:3001/health
+
+# Simulate sensor data
+curl -X POST http://localhost:3001/api/water \
+  -H "Content-Type: application/json" \
+  -d '{"distance": 45.5, "percentage": 77.25, "volume": 386.25}'
+
+# Get sensor status
+curl http://localhost:3001/api/sensors/status
+```
 
 ### Build for Production
 
 ```bash
+# Frontend
+npm run build
+npm start
+
+# Backend
+cd backend
 npm run build
 npm start
 ```
 
-### Lint Code
+## 🔐 Environment Variables
 
-```bash
-npm run lint
-```
-
-## 🏗️ Project Structure
-
-```
-water-usage-tracker/
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx          # Root layout with metadata
-│   │   ├── page.tsx             # Main dashboard page
-│   │   └── globals.css          # Global styles and Tailwind
-│   ├── components/
-│   │   ├── Navbar.tsx           # Top navigation with date selector
-│   │   ├── SummaryCard.tsx      # Reusable metric card
-│   │   ├── UsageTrendChart.tsx  # Line/area chart for usage trends
-│   │   ├── BuildingComparisonChart.tsx  # Bar chart comparing buildings
-│   │   ├── AlertsTable.tsx      # Alerts and anomalies table
-│   │   ├── BuildingDetailPanel.tsx  # Selected building details
-│   │   └── LoadingSkeleton.tsx  # Loading state components
-│   ├── lib/
-│   │   └── mockData.ts          # Mock data generators
-│   └── types/
-│       └── index.ts             # TypeScript type definitions
-├── public/                      # Static assets
-├── package.json
-├── tsconfig.json
-├── tailwind.config.ts
-└── next.config.js
-```
-
-## 📊 Data Model
-
-### TypeScript Types
-
-```typescript
-type BuildingId = 'hostel_a' | 'hostel_b' | 'academic_block' | 'admin_block' | 'canteen';
-
-interface BuildingUsage {
-  buildingId: BuildingId;
-  buildingName: string;
-  date: string;              // ISO date
-  totalLitres: number;
-  peakUsageHour: number;     // 0–23
-}
-
-interface SensorStatus {
-  sensorId: string;
-  buildingId: BuildingId;
-  locationLabel: string;
-  isOnline: boolean;
-  lastReadingAt: string;     // ISO datetime
-}
-
-interface Alert {
-  id: string;
-  status: 'critical' | 'warning' | 'resolved';
-  buildingName: string;
-  sensorId: string;
-  issue: string;
-  detectedAt: string;
-}
-```
-
-### Mock Data
-
-Currently, the dashboard uses **frontend mock data** with realistic patterns:
-
-- **14 days** of historical usage data per building
-- **Varied usage patterns** (hostels peak morning/evening, academic blocks peak during class hours, canteen peaks at meal times)
-- **20+ sensor statuses** across all buildings
-- **Sample alerts** (critical leaks, warnings, resolved issues)
-
-## 🔌 Backend Integration Guide
-
-### Where to Replace Mock Data with Real APIs
-
-The dashboard is designed for easy backend integration. Replace mock data in the following locations:
-
-#### 1. **Usage Data** (`src/app/page.tsx`)
-
-Replace this:
-```typescript
-import { mockUsageData, mockTodayHourlyData } from '@/lib/mockData';
-```
-
-With API calls:
-```typescript
-// Fetch historical usage data
-const usageData = await fetch('/api/usage?days=14').then(r => r.json());
-
-// Fetch today's hourly data
-const hourlyData = await fetch('/api/usage/hourly').then(r => r.json());
-```
-
-#### 2. **Sensor Status** (`src/app/page.tsx`)
-
-Replace:
-```typescript
-import { mockSensors } from '@/lib/mockData';
-```
-
-With:
-```typescript
-const sensors = await fetch('/api/sensors/status').then(r => r.json());
-```
-
-#### 3. **Alerts** (`src/app/page.tsx`)
-
-Replace:
-```typescript
-import { mockAlerts } from '@/lib/mockData';
-```
-
-With:
-```typescript
-const alerts = await fetch('/api/alerts').then(r => r.json());
-```
-
-### Recommended API Endpoints
-
-Create these API routes in `src/app/api/`:
-
-- `GET /api/usage?days=14` - Historical usage data
-- `GET /api/usage/hourly` - Today's hourly breakdown
-- `GET /api/sensors/status` - Current sensor statuses
-- `GET /api/alerts` - Active and recent alerts
-- `GET /api/buildings/:id` - Specific building details
-
-### Data Fetching Strategy
-
-For production, consider:
-
-1. **Server Components** - Fetch data on the server for initial page load
-2. **SWR or React Query** - For client-side data fetching with caching
-3. **WebSockets** - For real-time sensor updates
-4. **Polling** - Refresh data every 30-60 seconds for near-real-time updates
-
-Example with SWR:
-```typescript
-import useSWR from 'swr';
-
-const { data: usageData } = useSWR('/api/usage?days=14', fetcher, {
-  refreshInterval: 60000, // Refresh every minute
-});
-```
-
-## 🎨 Design System
-
-### Color Palette
-
-The dashboard uses a water-themed color palette:
-
-- **Primary (Water Blue)**: `#0ea5e9` - Main accent color
-- **Background**: `#f8fafc` - Light gray background
-- **Cards**: `#ffffff` - White with soft shadows
-- **Text**: `#0f172a` (primary), `#64748b` (secondary)
-
-### Component Library
-
-All components are built with:
-- **Tailwind CSS** for styling
-- **Recharts** for data visualization
-- **TypeScript** for type safety
-- **Responsive design** (mobile-first approach)
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 3.4
-- **Charts**: Recharts 2.10
-- **Fonts**: Inter (Google Fonts)
-- **Code Quality**: ESLint + Prettier
-
-## 📱 Features
-
-### Dashboard Components
-
-1. **Summary Cards** (4 cards)
-   - Total water used today with trend
-   - Most consuming building
-   - Leak risk assessment
-   - Active sensors online
-
-2. **Usage Trend Chart**
-   - Toggle between total campus and individual buildings
-   - Hourly view for "Today"
-   - Daily view for "Last 7/30 Days"
-   - Interactive tooltips
-
-3. **Building Comparison Chart**
-   - Bar chart comparing all buildings
-   - Color-coded by building
-   - Value labels on bars
-
-4. **Alerts Table**
-   - Status badges (critical/warning/resolved)
-   - Sensor information
-   - Relative timestamps
-   - Empty state when no alerts
-
-5. **Building Detail Panel**
-   - Selected building statistics
-   - 7-day average comparison
-   - Peak usage hour
-   - Sparkline trend chart
-
-### Interactivity
-
-- **Date Range Selector**: Today / Last 7 Days / Last 30 Days
-- **Building Selection**: Filter charts by building
-- **Loading States**: Smooth skeleton animations
-- **Responsive Design**: Mobile, tablet, and desktop layouts
-
-## 🔧 Configuration
-
-### Environment Variables
-
-For backend integration, create a `.env.local` file:
+### Frontend (.env.local)
 
 ```env
-NEXT_PUBLIC_API_URL=https://your-api-endpoint.com
-API_SECRET_KEY=your-secret-key
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-### Tailwind Customization
+### Backend (.env)
 
-Modify `tailwind.config.ts` to customize colors, spacing, or add new utilities.
+```env
+PORT=3001
+DATABASE_PATH=./data/water_monitor.db
+CORS_ORIGIN=http://localhost:3000
 
-## 📄 License
+# Tank configurations (HEIGHT_CM:DIAMETER_CM)
+TANK_CONFIG_HOSTEL_A=200:150
+TANK_CONFIG_HOSTEL_B=200:150
+TANK_CONFIG_ACADEMIC_BLOCK=300:200
+```
 
-This project is created for university use. Modify as needed for your institution.
+## 🚨 Troubleshooting
+
+### ESP32 Can't Connect
+
+- Verify WiFi credentials
+- Check ESP32 and computer are on same network
+- Ensure backend is running
+- Check firewall allows port 3001
+
+### Data Not Showing
+
+- Check backend logs for incoming data
+- Verify sensor ID matches database
+- Refresh dashboard (auto-refresh every 30s)
+- Check browser console for errors
+
+### Build Errors
+
+```bash
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Backend
+cd backend
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## 📈 Roadmap
+
+- [ ] Mobile app (React Native)
+- [ ] Email/SMS alerts
+- [ ] Predictive analytics with ML
+- [ ] Multi-campus support
+- [ ] Water quality sensors (pH, TDS)
+- [ ] Automated valve control
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please feel free to submit a Pull Request.
+
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👥 Authors
+
+- Your Name - Initial work
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- Recharts for beautiful charts
+- ESP32 community for hardware support
 
 ## 📞 Support
 
-For issues or questions, please contact the facilities management IT team.
+For issues and questions:
+- Open an issue on GitHub
+- Check the [documentation](INTEGRATION_GUIDE.md)
+- Review [troubleshooting guide](ESP32_SETUP.md#troubleshooting)
 
 ---
 
 **Built with ❤️ for sustainable campus water management**
+
+## 📸 Screenshots
+
+### Dashboard Overview
+![Dashboard](docs/screenshots/dashboard.png)
+
+### Real-time Monitoring
+![Monitoring](docs/screenshots/monitoring.png)
+
+### ESP32 Setup
+![ESP32](docs/screenshots/esp32.png)
+
+---
+
+**Star ⭐ this repo if you find it useful!**
